@@ -7,7 +7,7 @@
 function css_resources(){
     wp_enqueue_style('font_awesome','https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css');
     wp_enqueue_style('roboto_font','https://fonts.googleapis.com/css?family=Roboto+Condensed:300,300i,400,400i,700,700i|Roboto:100,300,400,400i,700,700i');
-    wp_enqueue_style('main_style',get_stylesheet_uri());
+    wp_enqueue_style('main_css',get_stylesheet());
 }
  add_action('wp_enqueue_scripts','css_resources');
 
@@ -16,7 +16,7 @@ function css_resources(){
  */
 
  function js_resources(){
-     wp_enqueue_script('carrosel', get_theme_file_uri('/js/scripts-bundled.js'), NULL, '1.0', true);
+     wp_enqueue_script('carrosel', "http://localhost:3000/bundled.js", NULL, '1.0', true);
  }
 
  
@@ -42,3 +42,43 @@ function university_theme_menu_features(){
 }
   
  add_action('after_setup_theme','university_theme_menu_features');
+
+
+
+
+ /**
+  * Apply date filter on ACF event_date
+  */
+
+
+  function convert_timestamp_to_date($timestamp,$format){
+
+    $date= new DateTime($timestamp);
+    return $date->format($format);
+  }
+
+  add_filter('convert_timestamp_to_date','convert_timestamp_to_date',10,2);
+
+ 
+/**
+ * 
+ *Edit event type archive query
+ *  
+*/
+function events_custom_query($wp_query){
+    //the pre get posts action is triggered whenever wp makes queries and that include the wp-admin menus! 
+    //so, if you truly need to trigger this action to use a custom query, do not forget to filter your targets!
+    if(!is_admin() && is_post_type_archive() && $wp_query->is_main_query()){
+        $wp_query->set('meta_key','event_date');
+        $wp_query->set('posts_per_page',3);
+        $wp_query->set('orderby','meta_value_num');
+        $wp_query->set('order','ASC');
+        $wp_query->set('meta_query',array(
+            'key' => 'event_date',
+            'compare' => '>=',
+            'value' => date('Ymd')//today's date.
+        ));
+    }
+
+}
+add_action('pre_get_posts','events_custom_query');
