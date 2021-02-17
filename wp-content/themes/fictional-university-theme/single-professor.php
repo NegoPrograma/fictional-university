@@ -13,22 +13,25 @@ while(have_posts()):
     <div class="page-banner__content container container--narrow">
         <h1 class="page-banner__title"><?php echo the_title() ?></h1>
         <div class="page-banner__intro">
-            <p>TO REPLACE.</p>
+            <p><?echo get_field('subtitle');?></p>
         </div>
     </div>
 </div>
 
 <div class="container container--narrow page-section">
-<div class='metabox metabox--position-up metabox--with-home-link'>
-    <p><a class='metabox__blog-home-link' href='<?php echo  get_post_type_archive_link('event');?>'><i class='fa fa-home' aria-hidden='true'></i>Events</a>
-    <span class='metabox__main'><?php the_title();?></span></p></div>
 
- <div class="generic-content"><?php the_content()?></div>
+
+ <div class="generic-content">
+ <div class="row group">
+ <div class="one-third"><?php the_post_thumbnail('professorLandscape');?></div>
+ <div class="two-thirds"><?the_content();?></div>
+ </div>
+ </div>
  <?php endwhile;?>
 
  <?php $programs = get_field('related_programs');
 if( is_array($programs) || $programs->ID != null) : ?>
-  <h3>Related programs:</h3>
+  <h3>Subject(s) Taught:</h3>
 <ul>
 <?php
 

@@ -27,6 +27,8 @@ add_action('wp_enqueue_scripts','js_resources');
  */
 function university_theme_support(){
     add_theme_support('title-tag');
+    add_theme_support('post-thumbnails');//add associative image to standard blog posts 
+    add_image_size('professorLandscape',400,500); //add image size prefix 
 }
 
  add_action('after_setup_theme','university_theme_support');
@@ -68,7 +70,7 @@ function university_theme_menu_features(){
 function events_custom_query($wp_query){
     //the pre get posts action is triggered whenever wp makes queries and that include the wp-admin menus! 
     //so, if you truly need to trigger this action to use a custom query, do not forget to filter your targets!
-    if(!is_admin() && is_post_type_archive() && $wp_query->is_main_query()){
+    if(!is_admin() && is_post_type_archive('event') && $wp_query->is_main_query()){
         $wp_query->set('meta_key','event_date');
         $wp_query->set('posts_per_page',3);
         $wp_query->set('orderby','meta_value_num');
@@ -82,3 +84,18 @@ function events_custom_query($wp_query){
 
 }
 add_action('pre_get_posts','events_custom_query');
+
+/**
+ * 
+ *Edit event type archive query
+ *  
+*/
+function programs_custom_query($wp_query){
+    if(!is_admin() && is_post_type_archive('program') && $wp_query->is_main_query()){
+        $wp_query->set('posts_per_page',-1);
+        $wp_query->set('orderby','title');
+        $wp_query->set('order','ASC');
+    }
+
+}
+add_action('pre_get_posts','programs_custom_query');
