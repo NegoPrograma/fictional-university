@@ -1,4 +1,4 @@
-<?php echo 'home page carai';
+<?php 
 
 /**
  * The WP LOOP

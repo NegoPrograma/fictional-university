@@ -16,8 +16,10 @@ function css_resources(){
  */
 
  function js_resources(){
+    wp_enqueue_script('jquery', 'https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js', array(), null, true);
      wp_enqueue_script('carrosel', "http://localhost:3000/bundled.js", NULL, '1.0', true);
- }
+     wp_enqueue_script('main_js', get_template_directory_uri()."/js/scripts.js", NULL, '1.0', true);
+    }
 
  
 add_action('wp_enqueue_scripts','js_resources');
