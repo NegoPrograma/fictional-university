@@ -1,5 +1,7 @@
 <?php
 
+require get_theme_file_path('/inc/search-route.php');
+
 /**
  * Action to include css files.
  */
@@ -16,9 +18,14 @@ function css_resources(){
  */
 
  function js_resources(){
+   
     wp_enqueue_script('jquery', 'https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js', array(), null, true);
-     wp_enqueue_script('carrosel', "http://localhost:3000/bundled.js", NULL, '1.0', true);
-     wp_enqueue_script('main_js', get_template_directory_uri()."/js/scripts.js", NULL, '1.0', true);
+    wp_enqueue_script('carrosel', "http://localhost:3000/bundled.js", null, '1.0', true);
+    wp_enqueue_script('main_js', get_template_directory_uri()."/js/scripts.js", null, '1.0', true);
+    wp_localize_script('main_js','helper',array(
+        'root_url' => get_site_url()
+    ));
+    
     }
 
  
@@ -101,3 +108,16 @@ function programs_custom_query($wp_query){
 
 }
 add_action('pre_get_posts','programs_custom_query');
+
+
+function api_custom_request() {
+    register_rest_field('post','author_name',array(
+        'get_callback' => function () {
+            return get_the_author();
+        }
+    ));
+
+    
+}
+
+add_action('rest_api_init','api_custom_request');

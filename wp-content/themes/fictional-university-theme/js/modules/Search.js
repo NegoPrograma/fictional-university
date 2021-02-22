@@ -15,6 +15,7 @@ class Search {
         this.isSearchAnimationRunning = false;
         this.searchTimingValue;
         this.searchStringValue = '';
+        this.wp_api_url = "/wp-json/university/v1/search";
         
     }
 
@@ -42,18 +43,55 @@ class Search {
             this.resultsDiv.html("<div class='spinner-loader'></div>");
             this.isSearchAnimationRunning = true;
         }
-        this.searchTimingValue = setTimeout(this.getResults.bind(this),1000);
-    }
         this.searchStringValue = this.searchInputField.val();
+        this.searchTimingValue = setTimeout(this.getResults.bind(this),2000);
+    }
+        
 
     }
     getResults(){
         this.isSearchAnimationRunning = false;
-        if(this.searchStringValue != '')
-            this.resultsDiv.html('cabo');
+        let queryString = '?search=' + this.searchStringValue;
+        
+        if(this.searchStringValue != ''){
+            $.getJSON( helper.root_url + this.wp_api_url  + queryString,(data) => {
+                this.displayResults(Object.values(data));
+            }).catch((error)=>{
+                this.resultsDiv.html('something went wrong with your request, please try again.');
+            });
+            
+            
+        }
         else{
             this.resultsDiv.html('');
         }
+    }
+
+    displayResults(data){
+        
+        let numberOfPosts = 0;
+        data.forEach((item)=> { numberOfPosts += item.length})
+        if(numberOfPosts < 1){
+            this.resultsDiv.html("Sorry, no posts where found to match your query.");
+        }else{
+           console.log(data);
+            this.resultsDiv.html(
+                `<h2 class='search-overlay__section-title'>Results Found:</h2>
+                <ul class='link-list min-list'>
+                ${data.map(post => {
+                   return  post.map((item)=>{
+                    return `<li>
+                        <a href="${item.link}">${item.name}</a>
+                        </li>`;
+                }).join('')
+                }).join('')
+                    
+              
+                }
+                </ul>
+            `)
+     }
+     console.log(this.wp_api_url);
     }
 
     keyPressDispatch(e){
@@ -71,6 +109,8 @@ class Search {
 
     openOverlay() {
         this.searchOverlay.addClass('search-overlay--active');
+        this.searchInputField.val('');
+        setTimeout(()=> {this.searchInputField.focus()},500)
         $('body').addClass('body-no-scroll');
     }
 
